@@ -31,6 +31,7 @@ if search_results:
     print(f"ID: {first_result.id}") # The ID is very important!
     print(f"Release Date: {first_result.release_date}")
     print(f"Overview: {first_result.overview}")
+    print(f"Genres: {first_result.genre_ids}")  # List of genre IDs
 else:
     print("No movie found with that name.")
 
