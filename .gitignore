@@ -12,5 +12,10 @@ wheels/
 
 # Notes and extra files
 notes.md
-planning.md
+planning.md 
 .env
+
+
+#large datas
+data
+data\movie_vectors_with_ids.parquet

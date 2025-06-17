@@ -1,6 +1,8 @@
 from tmdbv3api import TMDb, Movie
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
+import pyarrow # Required for pandas.to_parquet
+import pyarrow.parquet as pq # Required for pandas.to_parquet
 
 import os 
 from dotenv import load_dotenv
