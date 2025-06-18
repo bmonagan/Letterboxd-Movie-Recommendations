@@ -7,7 +7,7 @@ import helper_functions
 
 # Define the filename of the Parquet file containing movie IDs, titles, and TF-IDF vectors
 # This file is assumed to have been created by the previous script.
-input_parquet_filename = 'data/movie_vectors_with_ids.parquet'
+input_parquet_filename = 'data/movie_vectors_with_ids_titles.parquet'
 
 print(f"--- Loading data from '{input_parquet_filename}' and calculating cosine similarities ---")
 
@@ -64,17 +64,17 @@ else:
     # Skip the first element as it's the movie itself
     top_similar_movies_indices = sorted_similarities.index[1:num_recommendations+1]
     
-    movie_titles = pd.read_csv('data/TMDB_movie_dataset.csv')
-    selected_columns = ['id', 'title']
-    movie_titles =  movie_titles[selected_columns].copy()
-    movie_titles.set_index('id', inplace=True)  # <-- Add this line
+    # movie_titles = pd.read_csv('data/TMDB_movie_dataset.csv')
+    # selected_columns = ['id', 'title']
+    # movie_titles =  movie_titles[selected_columns].copy()
+    # movie_titles.set_index('id', inplace=True)  # <-- Add this line
     print(f"\nTop {num_recommendations} recommendations for '{target_movie_title}':")
     if top_similar_movies_indices.empty:
         print("No recommendations found (or only the movie itself was similar).")
     else:
         for idx in top_similar_movies_indices:
             rec_id = loaded_tfidf_df.loc[idx, 'id']
-            rec_title = movie_titles.loc[rec_id, 'title']
+            rec_title = loaded_tfidf_df.loc[idx, 'title']
             rec_score = sorted_similarities.loc[idx]
             print(f"  - ID: {rec_id}, Title: '{rec_title}', Similarity Score: {rec_score:.4f}")
 
