@@ -48,6 +48,7 @@ def movie_selection():
     
     if search_results:
         first_result = search_results[0]
+        print(f"Here is the ID of the Movie you selected: {first_result.id}")
         return first_result.id
     else:
         print("No movie found with that name.")
