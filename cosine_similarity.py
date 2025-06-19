@@ -10,13 +10,13 @@ import helper_functions
 # Vectors for similarities
 # They are on the same IDX making for an easy lookup.
 meta_data_file_location = "data/movie_metadata.parquet"
-movie_vectors = "data/tfidf_matrix.npz"
+movie_vectors_data = "data/tfidf_matrix.npz"
 
-print(f"--- Loading data from '{movie_vectors}' and calculating cosine similarities ---")
+print(f"--- Loading data from '{movie_vectors_data}' and calculating cosine similarities ---")
 
 # Load the Movie vectors into a df 
 try:
-    loaded_tfidf_df = sparse.load_npz(movie_vectors)
+    movie_vectors = sparse.load_npz(movie_vectors_data)
     print(f"'{movie_vectors}' loaded successfully.")
 except FileNotFoundError:
     print(f"Error: '{movie_vectors}' not found.")
@@ -30,21 +30,22 @@ try:
 except FileNotFoundError:
     print(f"Error: '{metadata}' not found.")
     print("Please ensure you have run the data preprocessing and vectorization script to create this file.")
-meta_data_first_col = metadata.columns[0]
+# Finding the relative shared IDX in the first column of both Files
 
-target_movie_idx = helper_functions.movie_selection()
+
+target_movie_id = helper_functions.movie_selection()
 
 # Ensure the target index is within bounds of the loaded data
-if target_movie_idx >= metadata['id'].max():
-    print(f"Error: Target movie index {target_movie_idx} is out of bounds.")
-    print("Please choose an index within the range [0, {}].".format(len(loaded_tfidf_df) - 1))
+if target_movie_id >= metadata['id'].max():
+    print(f"Error: Target movie index {target_movie_id} is out of bounds.")
+    print("Please choose an index within the range [0, {}].".format(len(movie_vectors) - 1))
 else:
-    target_movie_id = metadata.iloc[target_movie_idx]
-    target_movie_title = metadata.iloc[target_movie_idx]
+    row_index = metadata.index[metadata['id'] == target_movie_id][0]
+    print(row_index, movie_vectors.shape)
     # Reshape the target movie's vector to (1, -1) for cosine_similarity function
-    target_movie_vector = movie_vectors[target_movie_idx].reshape(1, -1)
+    target_movie_vector = movie_vectors[row_index].reshape(1, -1)
 
-    print(f"\nFinding recommendations for: ID={target_movie_id}, Title='{target_movie_title}'")
+    print(f"\nFinding recommendations for: ID={target_movie_id}")
 
     # Calculate cosine similarities between the target movie vector and all other movie vectors
     # The result will be an array of similarity scores (1xN).
@@ -54,7 +55,7 @@ else:
     cosine_sim_scores = cosine_sim_scores.flatten()
 
     # Create a Pandas Series of similarity scores, using the DataFrame's original index
-    similarity_series = pd.Series(cosine_sim_scores, index=loaded_tfidf_df.index)
+    similarity_series = pd.Series(cosine_sim_scores)
 
     # Sort the movies by similarity score in descending order
     sorted_similarities = similarity_series.sort_values(ascending=False)
@@ -68,13 +69,13 @@ else:
     # selected_columns = ['id', 'title']
     # movie_titles =  movie_titles[selected_columns].copy()
     # movie_titles.set_index('id', inplace=True)  # <-- Add this line
-    print(f"\nTop {num_recommendations} recommendations for '{target_movie_title}':")
+    print(f"\nTop {num_recommendations} recommendations for 'target_movie_title':")
     if top_similar_movies_indices.empty:
         print("No recommendations found (or only the movie itself was similar).")
     else:
         for idx in top_similar_movies_indices:
-            rec_id = loaded_tfidf_df.loc[idx, 'id']
-            rec_title = loaded_tfidf_df.loc[idx, 'title']
+            rec_id = metadata.iloc[idx, 0]      # if 'id' is the first column
+            rec_title = metadata.iloc[idx, 1]
             rec_score = sorted_similarities.loc[idx]
             print(f"  - ID: {rec_id}, Title: '{rec_title}', Similarity Score: {rec_score:.4f}")
 

@@ -22,7 +22,7 @@ tmdb.region = 'US'
 movie = Movie()
 
 # Search for movies matching the query 'Inception'
-search_results = movie.search('Inception')
+search_results = movie.search('Casino')
 
 # Print the title and release date of the first result
 if search_results:
