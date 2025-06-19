@@ -1,46 +1,46 @@
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
+from scipy import sparse
 import json # Potentially needed if you were to load feature names from json
 
 import helper_functions
 
 
-# Define the filename of the Parquet file containing movie IDs, titles, and TF-IDF vectors
-# This file is assumed to have been created by the previous script.
-input_parquet_filename = 'data/movie_vectors_with_ids_titles.parquet'
+# ID and Titles for Movie Name lookup
+# Vectors for similarities
+# They are on the same IDX making for an easy lookup.
+meta_data_file_location = "data/movie_metadata.parquet"
+movie_vectors = "data/tfidf_matrix.npz"
 
-print(f"--- Loading data from '{input_parquet_filename}' and calculating cosine similarities ---")
+print(f"--- Loading data from '{movie_vectors}' and calculating cosine similarities ---")
 
-# Load the Parquet file back into a DataFrame
+# Load the Movie vectors into a df 
 try:
-    loaded_tfidf_df = pd.read_parquet(input_parquet_filename)
-    print(f"'{input_parquet_filename}' loaded successfully.")
-    print("Loaded data head:")
-    print(loaded_tfidf_df.head())
+    loaded_tfidf_df = sparse.load_npz(movie_vectors)
+    print(f"'{movie_vectors}' loaded successfully.")
 except FileNotFoundError:
-    print(f"Error: '{input_parquet_filename}' not found.")
+    print(f"Error: '{movie_vectors}' not found.")
     print("Please ensure you have run the data preprocessing and vectorization script to create this file.")
 
+# Load the metadata into a DF 
 
-# Separate movie IDs, titles, and TF-IDF vectors
-# The vector columns are all columns after 'id' and 'title'.
-movie_ids = loaded_tfidf_df['id']
-movie_titles = loaded_tfidf_df['title']
-# Select only the feature columns for similarity calculation
-movie_vectors = loaded_tfidf_df.drop(columns=['id', 'title']).values
-
-print(f"\nShape of loaded movie vectors: {movie_vectors.shape}")
-
+try:
+    metadata = pd.read_parquet(meta_data_file_location)
+    print(f"'{metadata}' loaded successfully.")
+except FileNotFoundError:
+    print(f"Error: '{metadata}' not found.")
+    print("Please ensure you have run the data preprocessing and vectorization script to create this file.")
+meta_data_first_col = metadata.columns[0]
 
 target_movie_idx = helper_functions.movie_selection()
 
 # Ensure the target index is within bounds of the loaded data
-if target_movie_idx >= len(loaded_tfidf_df):
+if target_movie_idx >= metadata['id'].max():
     print(f"Error: Target movie index {target_movie_idx} is out of bounds.")
     print("Please choose an index within the range [0, {}].".format(len(loaded_tfidf_df) - 1))
 else:
-    target_movie_id = movie_ids.iloc[target_movie_idx]
-    target_movie_title = movie_titles.iloc[target_movie_idx]
+    target_movie_id = metadata.iloc[target_movie_idx]
+    target_movie_title = metadata.iloc[target_movie_idx]
     # Reshape the target movie's vector to (1, -1) for cosine_similarity function
     target_movie_vector = movie_vectors[target_movie_idx].reshape(1, -1)
 
