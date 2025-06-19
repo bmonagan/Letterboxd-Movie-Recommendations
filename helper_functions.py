@@ -37,13 +37,14 @@ def movie_selection():
     movie = Movie()
     while True:
         user_movie = input("Please select a movie:")
-        if user_movie.isalpha():
-            print(f"Thank you for selecting {user_movie}.")
+        if all(c.isalpha() or c.isspace() for c in user_movie):
+            print("Valid movie title")
             break
         else:
-            print("Invalid input. Please use only alphabetic characters.")
+            print("Invalid movie title")
 
     search_results = movie.search(user_movie)
+    print(search_results)
 
     
     if search_results:
