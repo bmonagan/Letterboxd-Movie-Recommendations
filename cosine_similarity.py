@@ -30,9 +30,10 @@ try:
 except FileNotFoundError:
     print(f"Error: '{metadata}' not found.")
     print("Please ensure you have run the data preprocessing and vectorization script to create this file.")
+
+
+
 # Finding the relative shared IDX in the first column of both Files
-
-
 target_movie_id = helper_functions.movie_selection()
 
 # Ensure the target index is within bounds of the loaded data

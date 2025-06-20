@@ -35,13 +35,11 @@ tmdb.region = 'US'
 def movie_selection():
     # Create a Movie object
     movie = Movie()
-    while True:
+    try:
         user_movie = input("Please select a movie:")
-        if all(c.isalpha() or c.isspace() for c in user_movie):
-            print("Valid movie title")
-            break
-        else:
-            print("Invalid movie title")
+        
+    except:
+        print("Invalid movie title")
 
     search_results = movie.search(user_movie)
     print(search_results)
