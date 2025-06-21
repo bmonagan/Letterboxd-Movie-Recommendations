@@ -1,14 +1,14 @@
 from fastapi import FastAPI, HTTPException, Query
 
 
-from cosine_api_testing import get_recommendations
+from cosine_similarity import get_recommendations
 
 app = FastAPI()
 
 @app.get("/recommendations/")
-def recommend(movie_id: int = Query(..., description="TMDB Movie ID"), num_recommendations: int = 5):
+def recommend(movie_title: str = Query(..., description="Movie Title"), num_recommendations: int = 10):
     try:
-        recs = get_recommendations(movie_id, num_recommendations)
+        recs = get_recommendations(movie_title, num_recommendations)
         return {"recommendations": recs}
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
