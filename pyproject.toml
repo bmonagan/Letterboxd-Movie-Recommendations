@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "bs4>=0.0.2",
     "fastapi>=0.115.13",
     "pandas>=2.3.0",
     "pyarrow>=20.0.0",
