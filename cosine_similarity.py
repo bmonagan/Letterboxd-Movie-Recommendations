@@ -1,6 +1,8 @@
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 from scipy import sparse
+from bs4 import BeautifulSoup
+import requests
 
 
 
@@ -34,4 +36,42 @@ def get_recommendations(target_movie_title: str, num_recommendations: int = 10):
             "title": rec_title,
             "similarity": float(rec_score)
         })
+    return recommendations
+
+##TODO: BROKEN RIGHT NOW. INFINITE LOOP THROUGH LETTERBOXD USER'S WATCHED FILMS IF FILM NOT FOUND IN DATASET
+def letter_boxd_get_recommendations(user_name: str, num_recommendations: int = 5, metadata=metadata, individual_recommendations: int = 5):
+
+    # Fetch the user's watched films from Letterboxd
+    url = f"https://letterboxd.com/{user_name}/films/diary/"
+    response = requests.get(url)
+    
+    if response.status_code != 200:
+        raise ValueError("Failed to fetch data from Letterboxd. Please check the username or your internet connection.")
+    
+    soup = BeautifulSoup(response.text, "html.parser")
+    
+    # Extract watched films
+    lb_watched = []
+    for a in soup.find_all('a', href=True):
+        href = a['href']
+        if href.startswith(f'/{user_name}/film/'):
+            film_id = href.split('/')[3].replace("-", " ")
+            lb_watched.append(film_id)
+    
+    if not lb_watched:
+        raise ValueError("No watched films found for this user.")
+    
+    # Get recommendations based on the watched films
+    recommendations = []
+    while len(recommendations) < num_recommendations and lb_watched:
+        # Limit the number of films to process to avoid excessive API calls
+        lb_watched = lb_watched[:individual_recommendations]
+        for film in lb_watched:
+            if film in metadata['title'].values:
+                # Get recommendations for each watched film
+                recs = get_recommendations(film, num_recommendations)
+                recommendations.extend(recs)
+            else:
+                print(f"Film '{film}' not found in the dataset. Skipping.")
+    
     return recommendations
