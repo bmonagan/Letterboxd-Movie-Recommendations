@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException, Query
 from cosine_similarity import get_recommendations, letter_boxd_get_recommendations
 
 
-app = FastAPI()
+app = FastAPI(title = "Movie Recommendation API", description = "API for movie recommendations based on cosine similarity and Letterboxd user data.")
 
 @app.get("/recommendations/")
 def recommend(movie_title: str = Query(..., description="Movie Title"), num_recommendations: int = 10):
