@@ -71,14 +71,18 @@ def letter_boxd_get_recommendations(user_name: str, num_recommendations: int = 5
     for film in lb_watched:
         # Clean the film title, removing trailing year if present and special characters 
         film = clean_film_title(film)
+        film = film.title()
+
         if film in metadata['title'].values and film not in seen:
             seen.add(film)
             print(f"Processing film: {film}")
             # Get recommendations for each watched film
             recs = get_recommendations(film, num_recommendations)
-            recommendations.extend(recs)
+            recommendations.append((film, recs))
         elif film not in metadata['title'].values and film not in seen:
             seen.add(film)
             print(f"Film '{film}' not found in the dataset. Skipping.")
+        if len(recommendations) >= num_recommendations:
+            break
     
     return recommendations
