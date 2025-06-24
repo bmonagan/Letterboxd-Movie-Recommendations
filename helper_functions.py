@@ -4,6 +4,7 @@ import ast
 from tmdbv3api import TMDb, Movie
 import os 
 from dotenv import load_dotenv
+import re
 
 def parse_and_clean(text):
     if pd.isna(text) or text == '[]': 
@@ -51,3 +52,10 @@ def movie_selection():
         return first_result.id
     else:
         print("No movie found with that name.")
+
+
+
+
+def clean_film_title(slug: str) -> str:
+    # Remove a trailing "-YYYY" if present
+    return re.sub(r'-\d{4}$', '', slug).replace("-", " ")

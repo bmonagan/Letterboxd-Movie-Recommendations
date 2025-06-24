@@ -3,6 +3,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from scipy import sparse
 from bs4 import BeautifulSoup
 import requests
+from helper_functions import clean_film_title
 
 
 
@@ -63,15 +64,21 @@ def letter_boxd_get_recommendations(user_name: str, num_recommendations: int = 5
     
     # Get recommendations based on the watched films
     recommendations = []
-    while len(recommendations) < num_recommendations and lb_watched:
-        # Limit the number of films to process to avoid excessive API calls
-        lb_watched = lb_watched[:individual_recommendations]
-        for film in lb_watched:
-            if film in metadata['title'].values:
-                # Get recommendations for each watched film
-                recs = get_recommendations(film, num_recommendations)
-                recommendations.extend(recs)
-            else:
-                print(f"Film '{film}' not found in the dataset. Skipping.")
+    seen = set()
+    # while lb_watched and len(recommendations) < num_recommendations or len(recommendations) + len(seen) == len(lb_watched):
+    #     # Limit the number of films to process to avoid excessive API calls
+
+    for film in lb_watched:
+        # Clean the film title, removing trailing year if present and special characters 
+        film = clean_film_title(film)
+        if film in metadata['title'].values and film not in seen:
+            seen.add(film)
+            print(f"Processing film: {film}")
+            # Get recommendations for each watched film
+            recs = get_recommendations(film, num_recommendations)
+            recommendations.extend(recs)
+        elif film not in metadata['title'].values and film not in seen:
+            seen.add(film)
+            print(f"Film '{film}' not found in the dataset. Skipping.")
     
     return recommendations
