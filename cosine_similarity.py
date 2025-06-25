@@ -3,8 +3,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 from scipy import sparse
 from bs4 import BeautifulSoup
 import requests
-from helper_functions import clean_film_title
 
+from helper_functions import clean_film_title, capitalize_roman
 
 
 
@@ -72,6 +72,7 @@ def letter_boxd_get_recommendations(user_name: str, num_recommendations: int = 5
         # Clean the film title, removing trailing year if present and special characters 
         film = clean_film_title(film)
         film = film.title()
+        film = capitalize_roman(film)
 
         if film in metadata['title'].values and film not in seen:
             seen.add(film)

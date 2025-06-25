@@ -55,7 +55,22 @@ def movie_selection():
 
 
 
-
 def clean_film_title(slug: str) -> str:
-    # Remove a trailing "-YYYY" if present
-    return re.sub(r'-\d{4}$', '', slug).replace("-", " ")
+    """
+    Remove a trailing "-YYYY" if present
+    """
+    return re.sub(r'\d{4}$', '', slug).replace("-", " ")
+
+def capitalize_roman(title: str) -> str:
+    """
+    Capitalizes a Roman numeral at the end of a film title if present.
+    Example: "Rocky ii" -> "Rocky II"
+    """
+    import re
+    # Match a space and roman numeral at the end (case-insensitive)
+    match = re.search(r'(.*\s)([ivx]+)$', title, re.IGNORECASE)
+    if match:
+        prefix = match.group(1)
+        roman = match.group(2).upper()
+        return f"{prefix}{roman}"
+    return title
