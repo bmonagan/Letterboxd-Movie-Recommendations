@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from cosine_similarity import letter_boxd_get_recommendations
 
 # Fetch the webpage
 
@@ -24,3 +25,4 @@ for a in soup.find_all('a', href=True):
 
 
 print(lb_watched)
+
