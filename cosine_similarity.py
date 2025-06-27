@@ -40,7 +40,7 @@ def get_recommendations(target_movie_title: str, num_recommendations: int = 10):
     return recommendations
 
 ##TODO: BROKEN RIGHT NOW. INFINITE LOOP THROUGH LETTERBOXD USER'S WATCHED FILMS IF FILM NOT FOUND IN DATASET
-def letter_boxd_get_recommendations(user_name: str, num_recommendations: int = 5, metadata=metadata, individual_recommendations: int = 5):
+def letter_boxd_get_recommendations(user_name: str, num_recommendations: int = 5, metadata=metadata, recommendations_per_film: int = 5):
 
     # Fetch the user's watched films from Letterboxd
     url = f"https://letterboxd.com/{user_name}/films/diary/"
@@ -78,7 +78,7 @@ def letter_boxd_get_recommendations(user_name: str, num_recommendations: int = 5
             seen.add(film)
             print(f"Processing film: {film}")
             # Get recommendations for each watched film
-            recs = get_recommendations(film, num_recommendations)
+            recs = get_recommendations(film, recommendations_per_film)
             recommendations.append((film, recs))
         elif film not in metadata['title'].values and film not in seen:
             seen.add(film)

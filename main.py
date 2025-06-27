@@ -15,9 +15,9 @@ def recommend(movie_title: str = Query(..., description="Movie Title"), num_reco
         raise HTTPException(status_code=404, detail=str(e))
 
 @app.get("/letterboxd/")
-def letterboxd_recommendations(user_name: str = Query(..., description="Letterboxd Username"), num_recommendations: int = 10):
+def letterboxd_recommendations(user_name: str = Query(..., description="Letterboxd Username"), num_recommendations: int = 10, recommendations_per_film: int = 5):
     try:
-        recs = letter_boxd_get_recommendations(user_name, num_recommendations)
+        recs = letter_boxd_get_recommendations(user_name, num_recommendations, recommendations_per_film=recommendations_per_film)
         return {"recommendations": recs}
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
