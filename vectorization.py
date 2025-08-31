@@ -1,12 +1,8 @@
+# vectorization.py
+"Vectorization of movie data using TF-IDF."
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
-from scipy.sparse import save_npz,load_npz 
 from scipy import sparse
-from sklearn.metrics.pairwise import cosine_similarity
-import pyarrow # Required for pandas.to_parquet
-import pyarrow.parquet as pq # Required for pandas.to_parquet
-
-
 from helper_functions import parse_and_clean
 
 df = pd.read_csv('data/TMDB_movie_dataset.csv')
@@ -43,5 +39,3 @@ print(f"\nShape of TF-IDF matrix: {tfidf_matrix.shape}")
 
 sparse.save_npz('tfidf_matrix.npz', tfidf_matrix)
 df[['id', 'title']].to_parquet('movie_metadata.parquet', index=False)
-
-
