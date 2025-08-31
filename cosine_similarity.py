@@ -39,7 +39,6 @@ def get_recommendations(target_movie_title: str, num_recommendations: int = 10):
         })
     return recommendations
 
-##TODO: BROKEN RIGHT NOW. INFINITE LOOP THROUGH LETTERBOXD USER'S WATCHED FILMS IF FILM NOT FOUND IN DATASET
 def letter_boxd_get_recommendations(user_name: str, num_recommendations: int = 5, metadata=metadata, recommendations_per_film: int = 5):
 
     # Fetch the user's watched films from Letterboxd
