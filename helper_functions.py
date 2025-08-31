@@ -1,21 +1,28 @@
-import pandas as pd
-import json
-import ast
-from tmdbv3api import TMDb, Movie
-import os 
-from dotenv import load_dotenv
+# helper_functions.py
+"Helper functions for movie data processing and TMDb interaction."
+# Standard library imports
 import re
+import os
+import json
+import pandas as pd
+
+from tmdbv3api import TMDb, Movie
+
+from dotenv import load_dotenv
+
 
 def parse_and_clean(text):
-    if pd.isna(text) or text == '[]': 
+    "Parse a string representation of a list of dictionaries and return a cleaned string of names."
+    if pd.isna(text) or text == '[]':
         return ''
     try:
-        
         list_of_dicts = json.loads(text)
         return ' '.join([d['name'] for d in list_of_dicts if 'name' in d])
     except (json.JSONDecodeError, TypeError):
-        return str(text).replace('[', '').replace(']', '').replace("'", "").replace('"', '').replace(',', ' ').strip()
-
+        chars_to_remove = ['[', ']', '{', '}', '"', "'"]
+        for char in chars_to_remove:
+            text = str(text).replace(char, '')
+        return str(text).strip()
 
 
 # Load environment variables from .env file
@@ -34,18 +41,21 @@ tmdb.language = 'en'
 
 tmdb.region = 'US'
 def movie_selection():
+    "Interactively select a movie and return its TMDb ID."
     # Create a Movie object
     movie = Movie()
     try:
         user_movie = input("Please select a movie:")
-        
-    except:
-        print("Invalid movie title")
+    except EOFError:
+        print("Input ended unexpectedly.")
+        return None
+    except KeyboardInterrupt:
+        print("Input cancelled by user.")
+        return None
 
     search_results = movie.search(user_movie)
     print(search_results)
 
-    
     if search_results:
         first_result = search_results[0]
         print(f"Here is the ID of the Movie you selected: {first_result.id}")
@@ -66,7 +76,6 @@ def capitalize_roman(title: str) -> str:
     Capitalizes a Roman numeral at the end of a film title if present.
     Example: "Rocky ii" -> "Rocky II"
     """
-    import re
     # Match a space and roman numeral at the end (case-insensitive)
     match = re.search(r'(.*\s)([ivx]+)$', title, re.IGNORECASE)
     if match:
