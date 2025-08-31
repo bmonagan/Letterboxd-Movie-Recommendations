@@ -1,5 +1,7 @@
 # helper_functions.py
-"Helper functions for movie data processing and TMDb interaction."
+"""
+Helper functions for movie data processing and TMDb interaction.
+"""
 # Standard library imports
 import re
 import os
